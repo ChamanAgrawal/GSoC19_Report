@@ -123,8 +123,9 @@ A strict biword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub
 In the Dual RSK insertion, when a number k<sub>i</sub> is inserted into the i<sup>th</sup> row of P, it bumps out the first integer greater or equal to k<sub>i</sub> in this row.
 
 **Reference**: 
-* Richard P. Stanley. RSK<sup>*</sup> in Chapter-7, *Enumerative Combinatorics*, Volume 2. Cambridge University Press, 2001.
+* Richard P. Stanley. RSK<sup>*</sup>, Chapter-7, *Enumerative Combinatorics*, Volume 2. Cambridge University Press, 2001.
 * Darij Grinberg, Victor Reiner. [Hopf Algebras In Combinatorics](https://arxiv.org/src/1409.8356v5/anc/HopfComb-v73-with-solutions.pdf) the third solution to Exercise 2.7.12(a)
+
 ```python
 sage: P,Q = RSK(Word([2,3,3,2,1,3,2,3]), insertion=RSK.rules.dualRSK)
 sage: ascii_art((P, Q))
@@ -149,3 +150,36 @@ sage: RSK_inverse(P, Q, 'matrix', insertion=RSK.rules.dualRSK)
 ```
 
 
+### [Ticket #25070: Implement coRSK algorithm](https://trac.sagemath.org/ticket/25070)
+CoRSK insertion gives a bijection between a strict cobiword and a pair of same shaped tableaux (P, Q) where P is a semistandard tableau while Q is a row strict tableau. CoRSK uses the insertion algorithm as the classical RSK algorithm.
+
+A strict cobiword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>] and [b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>] that satisfy the strict inequalities (a<sub>1</sub>, b<sub>1</sub>) < (a<sub>2</sub>, b<sub>2</sub>) < ... < (a<sub>n</sub>, b<sub>n</sub>), where the binary relation < on pairs of integers is defined by having (u<sub>1</sub>, v<sub>1</sub>) < (u<sub>2</sub>, v<sub>2</sub>) if and only if either u<sub>1</sub> < u<sub>2</sub> or (u<sub>1</sub> = u<sub>2</sub> and v<sub>1</sub> > v<sub>2</sub>).
+
+ **Reference**:
+ * William Fulton. [Young Tableaux](https://www.cambridge.org/core/books/young-tableaux/A7570B10D82AE7233E25E5D6F70A07B6) Section A.4. Cambridge University Press, 1997.
+ * Darij Grinberg, Victor Reiner. [Hopf Algebras In Combinatorics](https://arxiv.org/src/1409.8356v5/anc/HopfComb-v73-with-solutions.pdf) the second solution to Exercise 2.7.12(a)
+
+```python
+sage: P,Q = RSK(Word([2,3,3,2,1,3,2,3]), insertion = RSK.rules.coRSK)
+sage: ascii_art((P, Q))
+(   1  2  2  3  3    1  2  3  6  8 )
+(   2  3             4  7          )
+(   3            ,   5             )
+sage: M = to_matrix([1, 1, 3, 3, 4], [3, 2, 2, 1, 3]); M
+[0 1 1]
+[0 0 0]
+[1 1 0]
+[0 0 1]
+sage: P,Q = RSK(M, insertion = RSK.rules.coRSK)
+sage: ascii_art((P, Q))
+(   1  2  3    1  3  4 )
+(   2          1       )
+(   3      ,   3       )
+sage: RSK_inverse(P, Q, insertion=RSK.rules.coRSK)
+[[1, 1, 3, 3, 4], [3, 2, 2, 1, 3]]
+sage: RSK_inverse(P, Q, insertion=RSK.rules.coRSK, output='matrix')
+[0 1 1]
+[0 0 0]
+[1 1 0]
+[0 0 1]
+```
