@@ -30,7 +30,6 @@ Here is the summary of the all work I did in the project (Reference ticket [#278
 
 
 ### [Ticket #27852: Refactor structure of RSK class](https://trac.sagemath.org/ticket/27852)
-
 This ticket covered the complete fisrt haft of my project. The old code of RSK correspondence have three rules already implemented, namely RSK insertion, Edelman-Greene insertion and Hecke insertion but the implementions were tightly coupled so extending the module was difficuly. So, the first was to switch to an extensible design pattern.
 
 #### Rule based class structure
@@ -114,3 +113,39 @@ sage: ascii_art((P, Q))
 sage: RSK_inverse(P, Q, insertion=RSK.rules.Hecke, output='list')
 [5, 4, 1, 3, 4, 2, 5, 1, 2, 1, 4, 2, 4]
 ```
+
+
+### [Ticket #28058: Implement dualRSK algorithm](https://trac.sagemath.org/ticket/28058)
+Dual RSK algorithm is a bijection between a strict biword or a {0, 1} - matrix and a pair of same shaped tableaux ( P, Q ).
+
+A strict biword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>] and [b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>] that satisfy the strict inequalities (a<sub>1</sub>, b<sub>1</sub>) < (a<sub>2</sub>, b<sub>2</sub>) < ... < (a<sub>n</sub>, b<sub>n</sub>) in the lexicographic order.
+
+In the Dual RSK insertion, when a number k<sub>i</sub> is inserted into the i<sup>th</sup> row of P, it bumps out the first integer greater or equal to k<sub>i</sub> in this row.
+
+**Reference**: 
+* Richard P. Stanley. RSK<sup>*</sup> in Chapter-7, *Enumerative Combinatorics*, Volume 2. Cambridge University Press, 2001.
+* Darij Grinberg, Victor Reiner. [Hopf Algebras In Combinatorics](https://arxiv.org/src/1409.8356v5/anc/HopfComb-v73-with-solutions.pdf) the third solution to Exercise 2.7.12(a)
+```python
+sage: P,Q = RSK(Word([2,3,3,2,1,3,2,3]), insertion=RSK.rules.dualRSK)
+sage: ascii_art((P, Q))
+(   1  2  3    1  2  8 )
+(   2  3       3  6    )
+(   2  3       4  7    )
+(   3      ,   5       )
+sage: RSK(Word([1,1,3,4,4]), [1,4,2,1,3], insertion=RSK.rules.dualRSK)
+[[[1, 2, 3], [1], [4]], [[1, 1, 4], [3], [4]]]
+sage: P = Tableau([[1, 2, 5], [3], [4]])
+sage: Q = Tableau([[1, 2, 3], [4], [5]])
+sage: RSK_inverse(P, Q, insertion=RSK.rules.dualRSK)
+[[1, 2, 3, 4, 5], [1, 4, 5, 3, 2]]
+sage: RSK_inverse(P, Q, 'word', insertion=RSK.rules.dualRSK)
+word: 14532
+sage: RSK_inverse(P, Q, 'matrix', insertion=RSK.rules.dualRSK)
+[1 0 0 0 0]
+[0 0 0 1 0]
+[0 0 0 0 1]
+[0 0 1 0 0]
+[0 1 0 0 0]
+```
+
+
