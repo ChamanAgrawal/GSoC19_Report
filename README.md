@@ -183,3 +183,61 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.coRSK, output='matrix')
 [1 1 0]
 [0 0 1]
 ```
+### [Ticket #28228: Implement Semistandard and Standard super tableaux](https://trac.sagemath.org/ticket/28228)
+A semistandard super tableau is a tableau whose entries are primed positive integers, which are weakly increasing in rows and down columns. Also, the letters of even parity(unprimed) strictly increase down the columns, and letters of oddd parity(primed) strictly increase along the rows.
+
+A standard super tableau is a semistandard super tableau whose entries are in bijection with positive primed integers 1', 1, 2' ... n.
+
+#### Class structure
+There are two types of classes in sage element classes and parent classes. Element class objects are generic elements of a structure while the Parents classes are Sage/mathematical analogues of container objects in computer science.
+
+Element classes in this tickets are:
+```
+ SemistandardSuperTableau           # Inherits Tableau class
+ ├── __classcall_private__()        # Similar to __call__() method
+ ├── __init__()                     # Initialize class object
+ ├── _preprocess()                  # Preprocess object input and changes integers to PrimedEntry
+ └── check()                        # Check validity of input, SemistandardSuperTableau possible or not
+ 
+ StandardSuperTableau               # Inherits SemistandardSuperTableau class
+ ├── __classcall_private__()        # Similar to __call__() method
+ ├── check()                        # Check validity of input, StandardSuperTableau possible or not
+ └── is_standard()                  # Check is a given tableau is StandardSuperTableau or not
+```
+
+Parent classes in this tickets are:
+
+```
+ SemistandardSuperTableaux
+ ├── __classcall_private__()
+ ├── __contains__()
+ ├── __init__()
+ ├── _preprocess()
+ ├── check()
+ │
+ └── class SemistandardSuperTableaux_all
+     ├── __init__()
+     └── _repr_()
+ 
+ StandardSuperTableaux
+ ├── __classcall_private__()
+ ├── __contains__()
+ │
+ ├── class StandardSuperTableaux_all
+ │   ├── __init__()
+ │   └── _repr_()
+ │
+ ├── class StandardSuperTableaux_size
+ │   ├── __init__()
+ │   ├── _repr_()
+ │   ├── __contains__()
+ │   └── cardinality()
+ │
+ └── class StandardSuperTableaux_shape
+     ├── __init__()
+     ├── __contains__()
+     ├── _repr_()
+     ├── cardinality()
+     └── __iter__()
+ 
+```
