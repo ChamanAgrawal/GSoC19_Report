@@ -183,6 +183,8 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.coRSK, output='matrix')
 [1 1 0]
 [0 0 1]
 ```
+
+
 ### [Ticket #28228: Implement Semistandard and Standard super tableaux](https://trac.sagemath.org/ticket/28228)
 A semistandard super tableau is a tableau whose entries are primed positive integers, which are weakly increasing in rows and down columns. Also, the letters of even parity(unprimed) strictly increase down the columns, and letters of oddd parity(primed) strictly increase along the rows.
 
@@ -204,7 +206,7 @@ Element classes in this tickets are:
  StandardSuperTableau               # Inherits SemistandardSuperTableau class
  ├── __classcall_private__()        # Similar to __call__() method
  ├── check()                        # Check validity of input, StandardSuperTableau possible or not
- └── is_standard()                  # Check is a given tableau is StandardSuperTableau or not
+ └── is_standard()                  # Check if a given tableau is StandardSuperTableau or not
 ```
 
 Parent classes in this tickets are:
@@ -294,6 +296,7 @@ sage: SST.list()
  [[1', 1, 2'], [2, 3']]]
 ```
 
+
 ### [Ticket #24894: Implement superRSK algorithm](https://trac.sagemath.org/ticket/24894)
 SuperRSK algorithm is a combination of row and column insertion. It provides a bijection between a restricted super biword and a pair of same shaped semistandard super tableaux. The insertion is like the classical RSK bumping along the rows while a Dual RSK like bumping along the columns. Row or Column bumping is decided based on either the bumping entry is unprimed or primed respectively.
 
@@ -317,3 +320,123 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.superRSK)
 [[1', 1, 2', 2, 3', 3', 3', 3], [3, 2', 3, 2, 3', 3', 1', 2]]
 ```
 
+
+### [Ticket #28229: Extend ShiftedPrimedTableau for primed diagonal entries](https://trac.sagemath.org/ticket/28229)
+A shifted primed tableau is a tableau of shifted shape in the alphabet X' = \{1' < 1 < 2' < 2 < ... < n' < n\} such that:
+* the entries are weakly increasing along rows and columns;
+* a row cannot have two repeated primed elements, and a column cannot have two repeated non-primed elements;
+
+ShiftedPrimedTableau was already implementated in SageMath but the old implementation does not allow primed entries in the main diagonal of the shifted tableau. I have added an optional bool parameter *primed_diagonal* to the ShiftedPrimedTableau class and made the required modifications in methods like check(), iter() and other parent classes . If *primed_diagonal* is True then the shifted tableau can have primed entries in the main diagonal other it can not.
+
+#### Class structure
+Element class
+```
+ ShiftedPrimedTableau                # Inherits ClonableArray class
+ ├── __classcall_private__()         # Similar to __call__() method
+ ├── __init__()                      # Initialize class object
+ ├── _preprocess()                   # Preprocess object input and changes integers to PrimedEntry
+ ├── check()                         # Check validity of input, ShiftedPrimedTableau possible or not
+ ├── is_standard()                   # Check if entries of tableau are in one-to-one mapping with {1', 1,...,n} 
+ ├── __eq__()                        # True if two ShiftedPrimedTableau are equal
+ ├── __ne__()                        # True if two ShiftedPrimedTableau are unequal
+ ├── __hash__()                      # Return hash of given tableau
+ ├── _repr_()                        # String representation of class object
+ ├── _repr_list()                    # String representation of object as a list of tuples
+ ├── _repr_tab()                     # Return a nested list of strings representing the elements
+ ├── _repr_diagram()                 # Return a string representation of object as an array
+ ├── _ascii_art_()                   # ASCII representation of object
+ ├── _unicode_art_()                 # Unicode representation of object
+ ├── _ascii_art_table()              # ASCII/Unicode representation of object
+ ├── pp()                            # Pretty print object
+ ├── _latex_()                       # Latex code for object
+ ├── max_entry()                     # Return minimum unprimed letter greater than all the entries in tableau 
+ ├── shape()                         # Return the shape of the underlying partition of given object
+ ├── restrict()                      # Restrict the tableau to all the numbers less than or equal to given number
+ ├── restriction_outer_shape()       # Return the outer shape of the restriction of the object to given number
+ ├── restriction_shape()             # Return the skew shape of the restriction of the object to given number
+ ├── to_chain()                      # Return the chain of partition to the given skew object
+ └── weight()                        # Return the weight of given object
+ ```
+
+Parent class
+```
+ShiftedPrimedTableaux                # Parent class for ShiftedPrimedTableau
+├── __classcall_private__()
+├── __init__()
+├── _element_constructor_()          # Construct an object from given object as an element, if possible
+├── _contains_tableau()
+│
+├── class ShiftedPrimedTableaux_all                # Set of all Shifted primed tableaux
+│   ├── __init__()
+│   ├── _repr_()
+│   └── __iter__()
+│
+├── class ShiftedPrimedTableaux_shape              # Set of all Shifted primed tableaux of given shape
+│   ├── __classcall_private__()
+│   ├── __init__()
+│   ├── _repr_()
+│   ├── _contains_tableau()
+│   ├── __iter__()
+│   ├── module_generators()                        # Return the generator of given object as a crystal
+│   └── shape()
+│
+├── class ShiftedPrimedTableaux_weight             # Set of all Shifted primed tableaux of given weight
+│   ├── __init__()
+│   ├── _repr_()
+│   ├── _contains_tableau()
+│   └── __iter__()
+│
+└── class ShiftedPrimedTableaux_weight_shape       # Set of all Shifted primed tableaux of given shape and weight
+   ├── __init__()
+   ├── _repr_()
+   ├── _contains_tableau()
+   └── __iter__()
+```
+
+**Reference**: Bruce E. Sagan. [Shifted tableaux, Schur Q-functions, and a conjecture of R. Stanley](https://users.math.msu.edu/users/sagan/Papers/Old/sts-pub.pdf). Journal of Combinatorial Theory, Series A Volume 45 (1987), pp. 62-103.
+
+```python
+sage: T = ShiftedPrimedTableau([["2p",2,3],["2p","3p"],[2]], skew=[2,1])
+sage: ascii_art(T)
++---+---+---+---+---+
+| . | . | 2'| 2 | 3 |
++---+---+---+---+---+
+    | . | 2'| 3'|
+    +---+---+---+
+        | 2 |
+        +---+
+sage: unicode_art(T)
+┌───┬───┬───┐
+│ 1 │ 1 │ 3'│
+└───┼───┼───┤
+    │ 2'│ 3'│
+    └───┴───┘
+sage: T.pp()
+ .  .  2' 2  3 
+    .  2' 3'
+       2 
+sage: T = ShiftedPrimedTableau([[1,1,2.5],[1.5,2.5]], primed_diagonal=True)
+sage: T.pp()
+
+sage: ShiftedPrimedTableaux(shape=[3,2]).first()
+[(1, 1, 1), (2, 2)]
+sage: SPT = ShiftedPrimedTableaux(weight=(3,3), primed_diagonal=True)
+sage: SPT.first()
+[(1, 1, 1, 2, 2, 2)]
+sage: SPT.last()
+[(1', 1, 1, 2'), (2', 2)]
+sage: SPT.cardinality()
+20
+sage: ShiftedPrimedTableaux(weight=(3,3), primed_diagonal=False).cardinality()
+6
+sage: SPT = ShiftedPrimedTableaux(weight=(1,2), shape=[2,1])
+sage: SPT.list()
+[[(1, 2'), (2,)]]
+sage: SPT = ShiftedPrimedTableaux(weight=(1,2), shape=[2,1],primed_diagonal=True)
+sage: SPT.list()
+[[(1, 2'), (2,)], [(1, 2'), (2',)], [(1', 2'), (2,)], [(1', 2'), (2',)]]
+sage: ShiftedPrimedTableaux([4,2,1], max_entry=3, primed_diagonal=False).cardinality()
+24
+sage: ShiftedPrimedTableaux([4,2,1], max_entry=3, primed_diagonal=True).cardinality()
+192
+```
