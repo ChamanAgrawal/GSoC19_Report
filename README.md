@@ -432,3 +432,31 @@ sage: ShiftedPrimedTableaux([4,2,1], max_entry=3, primed_diagonal=False).cardina
 sage: ShiftedPrimedTableaux([4,2,1], max_entry=3, primed_diagonal=True).cardinality()
 192
 ```
+
+
+### [Ticket #28222: Implement Shifted Knuth Correspondence](https://trac.sagemath.org/ticket/28222)
+Like Super RSK algorithm, Shifted Knuth insertion is also a combination of row and column insertion. It provides a correspondence between a primed matrix A and a pair (P, Q) of same shaped shifted tableaux. For each entry, the insertion routine starts with row bumping and if the bumped element is from the main diagonal then the bumping procedure switches to column bumping and continues.
+
+**Reference**: Bruce E. Sagan. [Shifted tableaux, Schur Q-functions, and a conjecture of R. Stanley](https://users.math.msu.edu/users/sagan/Papers/Old/sts-pub.pdf). Journal of Combinatorial Theory, Series A Volume 45 (1987), pp. 62-103.
+```python
+sage: P, Q = RSK([[0,0.5,1.5], [1,0.5,0], [1.5,0,0]], insertion='shiftedKnuth')
+sage: unicode_art((P, Q))
+⎛ ┌───┬───┬───┬───┬───┐  ┌───┬───┬───┬───┬───┐ ⎞
+⎜ │ 1 │ 1 │ 1 │ 3'│ 3 │  │ 1 │ 1 │ 1 │ 2'│ 3'│ ⎟
+⎜ └───┼───┼───┼───┴───┘  └───┼───┼───┼───┴───┘ ⎟
+⎜     │ 2'│ 2 │              │ 2 │ 3'│         ⎟
+⎝     └───┴───┘        ,     └───┴───┘         ⎠
+sage: RSK_inverse(P, Q, insertion=RSK.rules.shiftedKnuth)
+[[1, 1, 1, 2, 2, 3, 3], [2', 3', 3, 1, 2', 1, 1]]
+sage: P, Q = RSK([2,6,5,1,7,4,3,1,2], insertion=RSK.rules.shiftedKnuth)
+sage: unicode_art((P, Q))
+⎛ ┌───┬───┬───┬───┬───┬───┐  ┌───┬───┬───┬───┬───┬───┐ ⎞
+⎜ │ 1 │ 1 │ 2 │ 5 │ 6 │ 7 │  │ 1 │ 2 │ 4'│ 5 │ 7'│ 8'│ ⎟
+⎜ └───┼───┼───┼───┴───┴───┘  └───┼───┼───┼───┴───┴───┘ ⎟
+⎜     │ 2 │ 3 │                  │ 3 │ 6'│             ⎟
+⎜     └───┼───┤                  └───┼───┤             ⎟
+⎜         │ 4 │                      │ 9 │             ⎟
+⎝         └───┘            ,         └───┘             ⎠
+sage: RSK_inverse(P, Q, insertion=RSK.rules.shiftedKnuth)
+[[1, 2, 3, 4, 5, 6, 7, 8, 9], [2, 6, 5, 1, 7, 4, 3, 1, 2]]
+```
