@@ -65,7 +65,7 @@ In a "Rule-based" design each rule is a different class with a parent "Rule" cla
 #### Robinson-Schensted-Knuth insertion
 The Robinson-Schensted-Knuth algorithm starts by initializing two semi-standard tableaux P<sub>0</sub> and Q<sub>0</sub> as empty tableaux then while iterating over the input generalized permutation starting at t = 0, take the pair ( j<sub>t</sub>, k<sub>t</sub> ) from the input permutation and set P<sub>t+1</sub> = P<sub>t</sub> <-- k<sub>t</sub>, and define Q<sub>t+1</sub> by adding a new box filled with j<sub>t</sub> to the tableau Q<sub>t</sub> at the same location the row insertion on P<sub>t</sub> ended. When the iteration completes, the pair ( P<sub>t</sub>, Q<sub>t</sub> ) formed is the image of given input under the Robinson-Schensted-Knuth correspondence.
 
-**Reference**: Donald E. Knuth [Permutations, matrices, and generalized Young tableaux](http://projecteuclid.org/euclid.pjm/1102971948). Pacific J. Math. Volume 34, Number 3 (1970), pp. 709-727.
+**Reference**: Donald E. Knuth. [Permutations, matrices, and generalized Young tableaux](http://projecteuclid.org/euclid.pjm/1102971948). Pacific J. Math. Volume 34, Number 3 (1970), pp. 709-727.
 
 ```python
 sage: P, Q = RSK([1, 2, 2, 2], [2, 1, 1, 2], insertion=RSK.rules.RSK)
@@ -79,7 +79,7 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.RSK)
 #### Edelman-Greene insertion
 The Edelman-Greene algorithm or the Coxeter-Knuth algorithm is defined for reduced word of a permutation. This algorithm is similar to the standard row insertion except that if k<sub>i</sub> and k<sub>i + 1</sub> both exist in row i, we only set k<sub>i+1</sub> = k<sub>i + 1</sub> and continue.
 
-**Reference**: Paul Edelman, Curtis Greene [Balanced Tableaux](https://doi.org/10.1016/0001-8708(87)90063-6). Advances in Mathematics 63 (1987), pp. 42-99.
+**Reference**: Paul Edelman, Curtis Greene. [Balanced Tableaux](https://doi.org/10.1016/0001-8708(87)90063-6). Advances in Mathematics 63 (1987), pp. 42-99.
 
 ```python
 sage: P, Q = RSK([1, 3, 2, 5, 4, 1], insertion='EG')
@@ -99,7 +99,7 @@ The Hecke RSK algorithm returns a pair of an increasing tableau P and a set-valu
  
 * **Case 2**: No such y exists, then we append x to the end of R. If the result is an increasing tableau we add the box that we have just filled with x in P to the shape of Q, and fill it with the one-element set { i }, and otherwise we find the bottommost box of the column containing the rightmost box of row R, and add i to the entry of Q in this box (this entry is a set, since Q is set-valued).
 
-**Reference**: A. Buch, A. Kresch, M. Shimozono, H. Tamvakis, and A. Yong [Stable Grothendieck polynomials and K-theoretic factor sequences](https://arxiv.org/abs/math/0601514). Math. Ann. 340 Issue 2, (2008), pp. 359--382.
+**Reference**: A. Buch, A. Kresch, M. Shimozono, H. Tamvakis, and A. Yong. [Stable Grothendieck polynomials and K-theoretic factor sequences](https://arxiv.org/abs/math/0601514). Math. Ann. 340 Issue 2, (2008), pp. 359--382.
 
 ```python
 sage: w = [5, 4, 1, 3, 4, 2, 5, 1, 2, 1, 4, 2, 4]
@@ -191,6 +191,8 @@ A standard super tableau is a semistandard super tableau whose entries are in bi
 #### Class structure
 There are two types of classes in sage element classes and parent classes. Element class objects are generic elements of a structure while the Parents classes are Sage/mathematical analogues of container objects in computer science.
 
+*Class StandardSuperTableaux* and *Class SemistandardSuperTableaux* are the parent classes of classes *StandardSuperTableau* and *SemistandardSuperTableau* respectively.
+
 Element classes in this tickets are:
 ```
  SemistandardSuperTableau           # Inherits Tableau class
@@ -208,36 +210,87 @@ Element classes in this tickets are:
 Parent classes in this tickets are:
 
 ```
- SemistandardSuperTableaux
- ├── __classcall_private__()
- ├── __contains__()
- ├── __init__()
- ├── _preprocess()
- ├── check()
+ SemistandardSuperTableaux          # Inherits SemistandardTableaux class
+ ├── __classcall_private__()        # Similar to __call__() method
+ ├── __contains__()                 # Check if input can be a SemistandardTableau or not
  │
- └── class SemistandardSuperTableaux_all
-     ├── __init__()
-     └── _repr_()
+ └── class SemistandardSuperTableaux_all         # Set of all Semi standard super tableaux
+     ├── __init__()                              # Initialize class object
+     └── _repr_()                                # Represents class object
  
- StandardSuperTableaux
- ├── __classcall_private__()
- ├── __contains__()
+ StandardSuperTableaux               # Inherits SemistandardSuperTableaux class
+ ├── __classcall_private__()         # Similar to __call__() method
+ ├── __contains__()                  # Check if input can be a SemistandardTableau or not
  │
- ├── class StandardSuperTableaux_all
- │   ├── __init__()
- │   └── _repr_()
+ ├── class StandardSuperTableaux_all             # Set of all Standard super tableaux
+ │   ├── __init__()                              # Initialize class object
+ │   └── _repr_()                                # Represents class object
  │
- ├── class StandardSuperTableaux_size
- │   ├── __init__()
- │   ├── _repr_()
- │   ├── __contains__()
- │   └── cardinality()
+ ├── class StandardSuperTableaux_size            # Set of all Standard super tableaux of a fixed size
+ │   ├── __init__()                              # Initialize class object
+ │   ├── _repr_()                                # Represents class object
+ │   ├── __contains__()                          # Check if input can be a Standard tableau of given size or not
+ │   └── cardinality()                           # Count the number of possible Standard tableau of given size
  │
- └── class StandardSuperTableaux_shape
-     ├── __init__()
-     ├── __contains__()
-     ├── _repr_()
-     ├── cardinality()
-     └── __iter__()
- 
+ └── class StandardSuperTableaux_shape           # Set of all Standard super tableaux of a fixed shape
+     ├── __init__()                              # Initialize class object
+     ├── __contains__()                          # Check if input can be a Standard tableau of given shape or not
+     ├── _repr_()                                # Represents class object
+     ├── cardinality()                           # Count the number of possible Standard tableau of given shape
+     └── __iter__()                              # Iterate over the list of all Standard tableau of given shape
 ```
+**Reference**: Robert Muth. [Super RSK correspondence with symmetry](https://arxiv.org/abs/1711.00420).
+
+Examples of SemistandardSuperTableau:
+```python
+sage: T = SemistandardSuperTableau([['1p',2,"3'"],[2,3]])
+sage: ascii_art(T)
+ 1'  2 3'
+  2  3
+sage: T.shape()
+[3, 2]
+sage: T = sage.combinat.super_tableau.SemistandardSuperTableaux_all()
+sage: [[1,2],[2]] in T
+True
+sage: [[1,3,2]] in T
+False
+```
+Examples of StandardSuperTableau:
+```python
+sage: T = StandardSuperTableau([["1'",1,"2'",2,"3'"],[3,"4'"]])
+sage: ascii_art(T)
+ 1'  1 2'  2 3'
+  3 4'
+sage: T.shape()
+[5, 2]
+sage: T.is_standard()
+True
+sage: SST = StandardSuperTableaux()
+sage: T = SST([["1'",1,"2'",2,"3'"],[3,"4'"]])
+sage: T.pp()
+ 1'  1 2'  2 3'
+  3 4'
+sage: SST = StandardSuperTableaux(3)  # set of standard super tableaux of size 3
+sage: SST.first()
+[[1', 1, 2']]
+sage: SST.last()
+[[1'], [1], [2']]
+sage: SST.cardinality()
+4
+sage: SST.list()
+[[[1', 1, 2']], [[1', 2'], [1]], [[1', 1], [2']], [[1'], [1], [2']]]
+sage: SST = StandardSuperTableaux([3,2])  # set of standard super tableaux of shape [3, 2]
+sage: SST.first()
+[[1', 2', 3'], [1, 2]]
+sage: SST.last()
+[[1', 1, 2'], [2, 3']]
+sage: SST.cardinality()
+5
+sage: SST.list()
+[[[1', 2', 3'], [1, 2]],
+ [[1', 1, 3'], [2', 2]],
+ [[1', 2', 2], [1, 3']],
+ [[1', 1, 2], [2', 3']],
+ [[1', 1, 2'], [2, 3']]]
+```
+
