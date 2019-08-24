@@ -5,11 +5,17 @@
 <br/>
 <br/>
 
-SageMath is an open source mathematics system implemented mostly in Python. It includes a wide area of mathematics, covering topics like algebra, combinatorics, graph theory, number theory, calculus, etc. SageMath uses the [Sage Trac development server](trac.sagemath.org) for development and discussion.
+SageMath is an open-source mathematics system implemented mostly in Python. It includes a wide area of mathematics, covering topics like algebra, combinatorics, graph theory, number theory, calculus, etc. SageMath uses the [Sage Trac development server](trac.sagemath.org) for development and discussion.
 
-The Trac server consists of tickets with each ticket having a unique ticket number. Like a GitHub issue, these tickets contains all the information related to discussions, commits and codebase changes. 
+The trac server consists of tickets, like a Github issue, that contains all the information related to discussions, commits, and codebase changes.
 
-My work as part of GSoC'19 was in the combinatorics module of SageMath was divided into two parts, refactoring the existing code to a modular design patern and implementing new algorithms related to Robinson–Schensted–Knuth (RSK) correspondence. I have also implemented and modified some combinatorial object classes as part of the project.
+As part of GSoC'19, I have worked on SageMath's combinatorics module. The project was broadly divided into two parts:
+
+* Refactoring the existing code to a modular design pattern
+* Implementing new algorithms related to Robinson–Schensted–Knuth (RSK) correspondence.
+* Implementing/modifying combinatorial object classes to support new algorithms.
+
+The RSK correspondence provides a one-to-one mapping between matrices and pairs of objects called semistandard Young tableaux, which are a finite collection of boxes, or cells, arranged in a particular order and satisfying certain conditions. So, for each matrix, the RSK algorithm will give a unique pair of semistandard Young tableaux. The RSK algorithm constructs the first tableau by successively inserting the values from the matrix according to a specific rule called insertion rule, while the second tableau records the evolution of the first tableau's shape during the construction. An insection rule defines the procedure of inserting a new element into a Young tableau. Different insertion rules result in different correspondences, and many of these have been thoroughly studied in combinatorics.
 
 Here is the summary of the all work I did in the project (Reference ticket [#27846](https://trac.sagemath.org/ticket/27846)).
 
@@ -18,25 +24,24 @@ Here is the summary of the all work I did in the project (Reference ticket [#278
 | Ticket No | Ticket Summary | Status |
 |:---------:|:---------------|:------:|
 | #27852 | [Refactor structure of RSK class](https://trac.sagemath.org/ticket/27852) | **Closed** |
-| #28058 | [Implement dualRSK algorithm](https://trac.sagemath.org/ticket/28058) | **Closed** |
-| #25070 | [Implement coRSK algorithm](https://trac.sagemath.org/ticket/25070) | **Closed** |
+| #25070 | [Implement dualRSK and coRSK algorithm](https://trac.sagemath.org/ticket/25070) | **Closed** |
 | #28228 | [Implement Semistandard and Standard super tableaux](https://trac.sagemath.org/ticket/28228) | **Closed** |
 | #28229 | [Extend ShiftedPrimedTableau for primed diagonal entries](https://trac.sagemath.org/ticket/28229) | **Needs Review** |
-| #24894 | [Implement superRSK algorithm](https://trac.sagemath.org/ticket/24894) | **Needs Review** |
+| #24894 | [Implement Super RSK algorithm](https://trac.sagemath.org/ticket/24894) | **Needs Review** |
 | #28222 | [Implement Shifted Knuth Correspondence](https://trac.sagemath.org/ticket/28222) | **Needs Review** |
 <br/>
 
 
 ## Status
-Implementation of all the above listed algorithms and combinatorial objects is complete and can be directly used without further development. Many more correspondences like RSK can be found in the established literature and can be implemented by following the general rule structure developed in this project.
+Implementation of all the above-listed algorithms and combinatorial objects is complete and can be used directly without further development. Many more correspondences like RSK can be found in the mathematical literature and can be implemented by following the rule design pattern developed in this project.
 
 
 ## Details
 ### [Ticket #27852: Refactor structure of RSK class](https://trac.sagemath.org/ticket/27852)
-This ticket covered the complete fisrt haft of my project. The old code of RSK correspondence have three rules already implemented, namely RSK insertion, Edelman-Greene insertion and Hecke insertion but the implementions were tightly coupled so extending the module was difficuly. So, the first was to switch to an extensible design pattern.
+This ticket covered the primary goal of the project. The old code for the RSK correspondence had three rules already implemented, namely RSK insertion, Edelman-Greene insertion, and Hecke insertion, but the implementations were tightly coupled, so extending the module was difficult. So, the first goal was to switch to an extensible design pattern.
 
 #### Rule based class structure
-In a "Rule-based" design each rule is a different class with a parent "Rule" class for common functionalities among different rules. This design can be useful in research, since anyone can implement his/her own insertion algorithm by simplly implementing their insertion() and reverse_insertion() methods.
+In a rule based design, each rule is a different class with a parent "Rule" class for common functionalities among different rules. This design can be useful in research since anyone can implement his/her insertion algorithm by simply implementing their insertion() and reverse_insertion() methods.
 
 ##### Structure of the parent rule class
 ```
@@ -45,9 +50,9 @@ In a "Rule-based" design each rule is a different class with a parent "Rule" cla
  ├── forward_rule                   # Iterate over a biword/permutation and insert entries in a tableau 
  ├── backward_rule                  # Iterate over a tableau and insert entries in an array 
  ├── insertion                      # Insert an entry in the tableau according to the bijection algorithm
- ├── reverse_insertion              # Remove an entry from tableau according to the reverse bijection algorithm
- ├── _forward_format_output         # Change tableau to different output format as given by user
- └── _backward_format_output        # Change array to different output format as given by user
+ ├── reverse_insertion              # Remove an entry from the tableau according to the reverse bijection algorithm
+ ├── _forward_format_output         # Change tableau to different output format as given by the user
+ └── _backward_format_output        # Change array to different output format as given by the user
 ```
 
 ##### Function call structure
@@ -96,11 +101,11 @@ sage: RSK_inverse(*RSK([1, 1, 1, 2], [1, 2, 3, 4], insertion=RSK.rules.EG), inse
 [[1, 1, 1, 2], [1, 2, 3, 4]]
 ```
 ####  Hecke insertion
-The Hecke RSK algorithm returns a pair of an increasing tableau P and a set-valued standard tableau Q. The construction is similar to the classical RSK algorithm, we first insert x into the fisrt row of P, then into the next row of the resulting tableau, and so on, until the construction terminates. The Hecke insertion has two cases in insertion. Suppose we are inserting x into row R of P then:
+The Hecke RSK algorithm returns a pair of an increasing tableau P and a set-valued standard tableau Q. The construction is similar to the classical RSK algorithm, we first insert x into the first row of P, then into the next row of the resulting tableau, and so on, until the construction terminates. The Hecke insertion has two cases in insertion. Suppose we are inserting x into row R of P then:
 
 * **Case 1**: If there exists an entry y in row R such that x < y, then let y be the minimal such entry. We replace this entry y with x if the result is still an increasing tableau.
  
-* **Case 2**: No such y exists, then we append x to the end of R. If the result is an increasing tableau we add the box that we have just filled with x in P to the shape of Q, and fill it with the one-element set { i }, and otherwise we find the bottommost box of the column containing the rightmost box of row R, and add i to the entry of Q in this box (this entry is a set, since Q is set-valued).
+* **Case 2**: No such y exists, then we append x to the end of R. If the result is an increasing tableau we add the box that we have just filled with x in P to the shape of Q and fill it with the one-element set { i }, and otherwise we find the bottommost box of the column containing the rightmost box of row R, and add i to the entry of Q in this box (this entry is a set, since Q is set-valued).
 
 **Reference**: A. Buch, A. Kresch, M. Shimozono, H. Tamvakis, and A. Yong. [Stable Grothendieck polynomials and K-theoretic factor sequences](https://arxiv.org/abs/math/0601514). Math. Ann. 340 Issue 2, (2008), pp. 359--382.
 
@@ -118,12 +123,12 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.Hecke, output='list')
 ```
 
 
-### [Ticket #28058: Implement dualRSK algorithm](https://trac.sagemath.org/ticket/28058)
+### [Ticket #25070: Implement dualRSK and coRSK algorithm](https://trac.sagemath.org/ticket/25070)
 Dual RSK algorithm is a bijection between a strict biword or a {0, 1} - matrix and a pair of same shaped tableaux ( P, Q ).
 
-A strict biword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>] and [b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>] that satisfy the strict inequalities (a<sub>1</sub>, b<sub>1</sub>) < (a<sub>2</sub>, b<sub>2</sub>) < ... < (a<sub>n</sub>, b<sub>n</sub>) in the lexicographic order.
+A strict biword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>] and [b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>] that satisfy the strict inequalities (a<sub>1</sub>, b<sub>1</sub>) < (a<sub>2</sub>, b<sub>2</sub>) < ... < (a<sub>n</sub>, b<sub>n</sub>) in lexicographic order.
 
-In the Dual RSK insertion, when a number k<sub>i</sub> is inserted into the i<sup>th</sup> row of P, it bumps out the first integer greater or equal to k<sub>i</sub> in this row.
+Under dual RSK insertion, when a number k<sub>i</sub> is inserted into the i<sup>th</sup> row of P, it bumps out the first integer greater or equal to k<sub>i</sub> in this row.
 
 **Reference**: 
 * Richard P. Stanley. RSK<sup>*</sup>, Chapter-7, *Enumerative Combinatorics*, Volume 2. Cambridge University Press, 2001.
@@ -152,8 +157,6 @@ sage: RSK_inverse(P, Q, 'matrix', insertion=RSK.rules.dualRSK)
 [0 1 0 0 0]
 ```
 
-
-### [Ticket #25070: Implement coRSK algorithm](https://trac.sagemath.org/ticket/25070)
 CoRSK insertion gives a bijection between a strict cobiword and a pair of same shaped tableaux (P, Q) where P is a semistandard tableau while Q is a row strict tableau. CoRSK uses the insertion algorithm as the classical RSK algorithm.
 
 A strict cobiword is a pair of two lists [a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>] and [b<sub>1</sub>, b<sub>2</sub>, ..., b<sub>n</sub>] that satisfy the strict inequalities (a<sub>1</sub>, b<sub>1</sub>) < (a<sub>2</sub>, b<sub>2</sub>) < ... < (a<sub>n</sub>, b<sub>n</sub>), where the binary relation < on pairs of integers is defined by having (u<sub>1</sub>, v<sub>1</sub>) < (u<sub>2</sub>, v<sub>2</sub>) if and only if either u<sub>1</sub> < u<sub>2</sub> or (u<sub>1</sub> = u<sub>2</sub> and v<sub>1</sub> > v<sub>2</sub>).
@@ -189,12 +192,12 @@ sage: RSK_inverse(P, Q, insertion=RSK.rules.coRSK, output='matrix')
 
 
 ### [Ticket #28228: Implement Semistandard and Standard super tableaux](https://trac.sagemath.org/ticket/28228)
-A semistandard super tableau is a tableau whose entries are primed positive integers, which are weakly increasing in rows and down columns. Also, the letters of even parity(unprimed) strictly increase down the columns, and letters of oddd parity(primed) strictly increase along the rows.
+A semistandard super tableau is a tableau whose entries are primed positive integers, which are weakly increasing in rows and down columns. Also, the letters of even parity(unprimed) strictly increase down the columns, and letters of odd parity(primed) strictly increase along the rows.
 
 A standard super tableau is a semistandard super tableau whose entries are in bijection with positive primed integers 1', 1, 2' ... n.
 
 #### Class structure
-There are two types of classes in sage element classes and parent classes. Element class objects are generic elements of a structure while the Parents classes are Sage/mathematical analogues of container objects in computer science.
+There are two types of classes in SageMath, element classes, and parent classes. Element class objects are generic elements of a structure, while the parent classes are model for a (mathematical) set of a structure.
 
 *Class StandardSuperTableaux* and *Class SemistandardSuperTableaux* are the parent classes of classes *StandardSuperTableau* and *SemistandardSuperTableau* respectively.
 
@@ -239,10 +242,10 @@ Parent classes in this tickets are:
  │
  └── class StandardSuperTableaux_shape           # Set of all Standard super tableaux of a fixed shape
      ├── __init__()                              # Initialize class object
-     ├── __contains__()                          # Check if input can be a Standard tableau of given shape or not
+     ├── __contains__()                          # Check if the input can be a Standard tableau of given shape or not
      ├── _repr_()                                # Represents class object
-     ├── cardinality()                           # Count the number of possible Standard tableau of given shape
-     └── __iter__()                              # Iterate over the list of all Standard tableau of given shape
+     ├── cardinality()                           # Count the number of possible Standard tableau of a given shape
+     └── __iter__()                              # Iterate over the list of all Standard tableau of a given shape
 ```
 **Reference**: Robert Muth. [Super RSK correspondence with symmetry](https://arxiv.org/abs/1711.00420).
 
@@ -300,8 +303,8 @@ sage: SST.list()
 ```
 
 
-### [Ticket #24894: Implement superRSK algorithm](https://trac.sagemath.org/ticket/24894)
-SuperRSK algorithm is a combination of row and column insertion. It provides a bijection between a restricted super biword and a pair of same shaped semistandard super tableaux. The insertion is like the classical RSK bumping along the rows while a Dual RSK like bumping along the columns. Row or Column bumping is decided based on either the bumping entry is unprimed or primed respectively.
+### [Ticket #24894: Implement Super RSK algorithm](https://trac.sagemath.org/ticket/24894)
+Super RSK algorithm is a combination of row and column insertion. It provides a bijection between restricted super biwords and pairs of semistandard super tableaux of the same shape. The insertion is like the classical RSK bumping along the rows while a dual RSK like bumping along the columns. Row or column bumping is decided based on either the bumping entry is unprimed or primed, respectively.
 
 **Reference**: Robert Muth. [Super RSK correspondence with symmetry](https://arxiv.org/abs/1711.00420).
 ```python
@@ -329,7 +332,7 @@ A shifted primed tableau is a tableau of shifted shape in the alphabet X' = \{1'
 * the entries are weakly increasing along rows and columns;
 * a row cannot have two repeated primed elements, and a column cannot have two repeated non-primed elements;
 
-ShiftedPrimedTableau was already implementated in SageMath but the old implementation does not allow primed entries in the main diagonal of the shifted tableau. I have added an optional bool parameter *primed_diagonal* to the ShiftedPrimedTableau class and made the required modifications in methods like check(), iter() and other parent classes . If *primed_diagonal* is True then the shifted tableau can have primed entries in the main diagonal other it can not.
+ShiftedPrimedTableau was already implemented in SageMath, but the old implementation does not allow primed entries in the main diagonal of the shifted tableau. I have added an optional bool parameter *primed_diagonal* to the ShiftedPrimedTableau class and made the required modifications in methods like check(), iter() and other parent classes. If *primed_diagonal* is True, then the shifted tableau can have primed entries in the main diagonal other it can not.
 
 #### Class structure
 Element class
@@ -438,7 +441,7 @@ sage: ShiftedPrimedTableaux([4,2,1], max_entry=3, primed_diagonal=True).cardinal
 
 
 ### [Ticket #28222: Implement Shifted Knuth Correspondence](https://trac.sagemath.org/ticket/28222)
-Like Super RSK algorithm, Shifted Knuth insertion is also a combination of row and column insertion. It provides a correspondence between a primed matrix A and a pair (P, Q) of same shaped shifted tableaux. For each entry, the insertion routine starts with row bumping and if the bumped element is from the main diagonal then the bumping procedure switches to column bumping and continues.
+Like super RSK algorithm, shifted Knuth insertion is also a combination of row and column insertion. It provides a correspondence between a primed matrix A and a pair (P, Q) of shifted tableaux of the same shape. For each entry, the insertion routine starts with row bumping, and if the bumped element is from the main diagonal, then the bumping procedure switches to column bumping and continues.
 
 **Reference**: Bruce E. Sagan. [Shifted tableaux, Schur Q-functions, and a conjecture of R. Stanley](https://users.math.msu.edu/users/sagan/Papers/Old/sts-pub.pdf). Journal of Combinatorial Theory, Series A Volume 45 (1987), pp. 62-103.
 ```python
