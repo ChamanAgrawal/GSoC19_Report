@@ -294,3 +294,26 @@ sage: SST.list()
  [[1', 1, 2'], [2, 3']]]
 ```
 
+### [Ticket #24894: Implement superRSK algorithm](https://trac.sagemath.org/ticket/24894)
+SuperRSK algorithm is a combination of row and column insertion. It provides a bijection between a restricted super biword and a pair of same shaped semistandard super tableaux. The insertion is like the classical RSK bumping along the rows while a Dual RSK like bumping along the columns. Row or Column bumping is decided based on either the bumping entry is unprimed or primed respectively.
+
+**Reference**: Robert Muth. [Super RSK correspondence with symmetry](https://arxiv.org/abs/1711.00420).
+```python
+sage: P,Q = RSK(["1p", "2p", 2, 2, "3p", "3p", 3, 3], 
+....:           ["3p", 1, 2, 3, "3p", "3p", "2p", "1p"], insertion='superRSK')
+sage: ascii_art((P, Q))
+(  1' 2' 3'  3   1'  2  2 3' )
+(   1  2 3'      2'  3  3    )
+(  3'         ,  3'          )
+sage: RSK_inverse(P, Q, insertion=RSK.rules.superRSK)
+[[1', 2', 2, 2, 3', 3', 3, 3], [3', 1, 2, 3, 3', 3', 2', 1']]
+sage: P,Q = RSK(["1p", 1, "2p", 2, "3p", "3p", "3p", 3], 
+....:           [3, "2p", 3, 2, "3p", "3p", "1p", 2], insertion='superRSK')
+sage: ascii_art((P, Q))
+(  1'  2  2 3'   1' 2' 3'  3 )
+(  2'  3  3       1  2 3'    )
+(  3'         ,  3'          )
+sage: RSK_inverse(P, Q, insertion=RSK.rules.superRSK)
+[[1', 1, 2', 2, 3', 3', 3', 3], [3, 2', 3, 2, 3', 3', 1', 2]]
+```
+
