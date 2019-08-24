@@ -397,14 +397,6 @@ ShiftedPrimedTableaux                # Parent class for ShiftedPrimedTableau
 
 ```python
 sage: T = ShiftedPrimedTableau([["2p",2,3],["2p","3p"],[2]], skew=[2,1])
-sage: ascii_art(T)
-+---+---+---+---+---+
-| . | . | 2'| 2 | 3 |
-+---+---+---+---+---+
-    | . | 2'| 3'|
-    +---+---+---+
-        | 2 |
-        +---+
 sage: unicode_art(T)
 ┌───┬───┬───┐
 │ 1 │ 1 │ 3'│
