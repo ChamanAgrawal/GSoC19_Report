@@ -26,14 +26,17 @@ Here is the summary of the all work I did in the project (Reference ticket [#278
 | #28222 | [Implement Shifted Knuth Correspondence](https://trac.sagemath.org/ticket/28222) | **Needs Review** |
 <br/>
 
+
+## Status
+Implementation of all the above listed algorithms and combinatorial objects is complete and can be directly used without further development. Many more correspondences like RSK can be found in the established literature and can be implemented by following the general rule structure developed in this project.
+
+
 ## Details
-
-
 ### [Ticket #27852: Refactor structure of RSK class](https://trac.sagemath.org/ticket/27852)
 This ticket covered the complete fisrt haft of my project. The old code of RSK correspondence have three rules already implemented, namely RSK insertion, Edelman-Greene insertion and Hecke insertion but the implementions were tightly coupled so extending the module was difficuly. So, the first was to switch to an extensible design pattern.
 
 #### Rule based class structure
-In a "Rule-based" design each rule is a different class with a parent "Rule" class for common functionalities among different rules.
+In a "Rule-based" design each rule is a different class with a parent "Rule" class for common functionalities among different rules. This design can be useful in research, since anyone can implement his/her own insertion algorithm by simplly implementing their insertion() and reverse_insertion() methods.
 
 ##### Structure of the parent rule class
 ```
