@@ -1,6 +1,6 @@
 # Google Summer of Code 2019
 ### Project: Refactor RSK and implement new insertion rules
-### Mentor: [Travis Scrimshaw](https://sites.google.com/view/tscrim/home)
+### Mentor: [Travis Scrimshaw](https://people.smp.uq.edu.au/TravisScrimshaw/)
 ### Organization: [SageMath](http://www.sagemath.org/)
 <br/>
 <br/>
