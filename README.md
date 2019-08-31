@@ -27,7 +27,7 @@ Here is the summary of the all work I did in the project (reference ticket [#278
 | [#25070](https://trac.sagemath.org/ticket/25070) | [Implement dualRSK and coRSK algorithm](#ticket-25070-implement-dualrsk-and-corsk-algorithm) | **Closed** |
 | [#28228](https://trac.sagemath.org/ticket/28228) | [Implement Semistandard and Standard super tableaux](#ticket-28228-implement-semistandard-and-standard-super-tableaux) | **Closed** |
 | [#24894](https://trac.sagemath.org/ticket/24894) | [Implement super RSK algorithm](#ticket-24894-implement-super-rsk-algorithm) | **Needs Review** |
-| [#28229](https://trac.sagemath.org/ticket/28229) | [Extend ShiftedPrimedTableau for primed diagonal entries](#ticket-28229-extend-shiftedprimedtableau-for-primed-diagonal-entries) | **Positive Review** |
+| [#28229](https://trac.sagemath.org/ticket/28229) | [Extend ShiftedPrimedTableau for primed diagonal entries](#ticket-28229-extend-shiftedprimedtableau-for-primed-diagonal-entries) | **Closed** |
 | [#28222](https://trac.sagemath.org/ticket/28222) | [Implement Shifted Knuth Correspondence](#ticket-28222-implement-shifted-knuth-correspondence) | **Needs Review** |
 <br/>
 
