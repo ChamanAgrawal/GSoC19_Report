@@ -2,8 +2,10 @@
 ### Project: Refactor RSK and implement new insertion rules
 ### Mentor: [Travis Scrimshaw](https://people.smp.uq.edu.au/TravisScrimshaw/)
 ### Organization: [SageMath](http://www.sagemath.org/)
+### Github Code link: [RSK](https://github.com/sagemath/sage/blob/develop/src/sage/combinat/rsk.py), [Shifted Primed Tableau](https://github.com/sagemath/sage/blob/develop/src/sage/combinat/shifted_primed_tableau.py), [Super Tableau](https://github.com/sagemath/sage/blob/develop/src/sage/combinat/super_tableau.py)
 <br/>
 <br/>
+
 
 SageMath is an open-source mathematical software with many components implemented in Python. It can do computations in diverse fields of mathematics, like algebra, combinatorics, graph theory, number theory, calculus, etc. SageMath uses the [Sage Trac development server](trac.sagemath.org) for development and discussion.
 
